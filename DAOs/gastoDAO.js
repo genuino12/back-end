@@ -48,15 +48,43 @@ class gastoDAO {
     async Deletar(id){
         const query = `DELETE FROM despesas WHERE id = ?`;
         const [rows] = await pool.execute(query, [id]);
-        return result;
+        return rows;
     }
 
-    async Atualizar(id, gasto){
-        const [tipo_despesa_id, valor, data_vencimento, responsavel_nome, observacao] = gasto;
-        const quary = `UPDATE despesas SET tipo_despesa_id = ?, valor = ?, data_vencimento = ?, responsavel_nome = ?, observacao = ? WHERE id = ?`;
-        const [result] = await pool.execute(quary, [tipo_despesa_id, valor, data_vencimento, responsavel_nome, observacao, id]);
+    async Atualizar(id, gasto) {
+    
+        let { tipo_despesa_id, valor, data_vencimento, responsavel_nome, observacao } = gasto;
+    
+        
+        if (valor === undefined || isNaN(valor)) {
+            throw new Error('Valor inválido');
+        }
+    
+        if (data_vencimento === undefined || !Date.parse(data_vencimento)) {
+            throw new Error('Data de vencimento inválida');
+        }
+        tipo_despesa_id = tipo_despesa_id !== undefined ? tipo_despesa_id : null;
+        responsavel_nome = responsavel_nome !== undefined ? responsavel_nome : null;
+        observacao = observacao !== undefined ? observacao : null;
+        valor = valor !== undefined ? valor : null;
+        data_vencimento = data_vencimento !== undefined ? data_vencimento : null;
+    
+        const query = `
+            UPDATE despesas 
+            SET tipo_despesa_id = ?, valor = ?, data_vencimento = ?, responsavel_nome = ?, observacao = ? 
+            WHERE id = ?
+        `;
+    
+        const [result] = await pool.execute(query, [tipo_despesa_id, valor, data_vencimento, responsavel_nome, observacao, id]);
+    
+        
+        if (result.affectedRows === 0) {
+            throw new Error('Despesa não encontrada ou não foi possível atualizar');
+        }
+    
         return result;
     }
+    
 }
 
 module.exports = gastoDAO;
