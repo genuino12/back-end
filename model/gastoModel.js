@@ -8,9 +8,9 @@ class gastoModel {
     #responsavel_nome;
     #observacao;
 
-    constructor(id, tipo_despesa, valor, data_vencimento, responsavel_nome, observacao) {
+    constructor(id, tipo_despesa_id, valor, data_vencimento, responsavel_nome, observacao) {
         this.#id = id;
-        this.#tipo_despesa_id = tipo_despesa;
+        this.#tipo_despesa_id = tipo_despesa_id;
         this.#valor = valor;
         this.#data_vencimento = data_vencimento;
         this.#responsavel_nome = responsavel_nome;
@@ -67,6 +67,7 @@ class gastoModel {
         this.#observacao = value;
     }
 
+    
     toJSON() {
         return {
             id: this.#id,
@@ -78,22 +79,59 @@ class gastoModel {
         };
     }
 
+    
     static async criar(gastoData) {
         const dao = new gastoDAO();
         const gasto = new gastoModel(
-            null, 
-            gastoData.tipo_despesa,
+            gastoData.id,
+            gastoData.tipo_despesa_id,
             gastoData.valor,
             gastoData.data_vencimento,
             gastoData.responsavel_nome,
             gastoData.observacao
         );
 
-        
         const insertedId = await dao.inserir(gasto);
         gasto.id = insertedId;
 
-        return gasto;
+       
+        return gasto.toJSON();
+    }
+    static async BuscarPorFiltro(termo) {
+        const dao = new gastoDAO();
+        const rows = await dao.BuscarPorTermo(termo);
+        return rows.map((row) => new gastoModel(
+            row.id,
+            row.tipo_despesa_id,
+            row.valor,
+            row.data_vencimento,
+            row.responsavel_nome,
+            row.observacao
+        )
+        )
+    }
+    async Deletar(){
+        const dao = new gastoDAO();
+        return await dao.Deletar(this.#id);
+    }
+    async Atualizar(){
+        const dao = new gastoDAO();
+        return await dao.Atualizar(this.#id, this);
+    }
+
+    static async BuscaPorID(id){
+        const dao = new gastoDAO();
+        const data = await dao.BuscaPorID[id];
+        if (!data) return null;
+        return new gastoModel(
+            data.id,
+            data.tipo_despesa_id,
+            data.valor,
+            data.data_vencimento,
+            data.responsavel_nome,
+            data.observacao
+        )
+
     }
 }
 
