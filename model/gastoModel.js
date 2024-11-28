@@ -22,7 +22,7 @@ class gastoModel {
         return this.#id;
     }
 
-    get tipo_despesa() {
+    get tipo_despesa_id() {
         return this.#tipo_despesa_id;
     }
 
