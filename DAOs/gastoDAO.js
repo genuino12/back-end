@@ -28,9 +28,9 @@ class gastoDAO {
             
             // Execute a query para inserir os dados no banco de dados
             const [result] = await pool.execute(query, [
-                tipo_despesa_id,
-                valor,
-                data_vencimento,
+                tipo_despesa_id || null,
+                valor || null,
+                data_vencimento || null,
                 responsavel_nome || null, 
                 observacao || null        
             ]);
@@ -38,7 +38,12 @@ class gastoDAO {
             
             return result.insertId;
         } catch (error) {
-            console.error('Erro ao inserir gasto:', error);
+            console.error('Erro ao inserir gasto:', {
+                mensagem: error.message,
+                stack: error.stack,
+                dados: { tipo_despesa_id, valor, data_vencimento, responsavel_nome, observacao }
+            });
+            
             throw error;
         }
          
