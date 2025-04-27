@@ -49,16 +49,16 @@ class gastoDAO {
          
     }
     
-    async BuscarPorTermo(termo){
+    async BuscarPorDespesas(despesa){
 
-        if (!termo || termo.trim()===""){
+        if (!despesa || despesa.trim()==="" || despesa === null){
             const query = `SELECT * FROM despesas`;
             const [rows] = await pool.execute(query);
             return rows;
 
         }else {
-            const query = `SELECT * FROM despesas WHERE id LIKE ?`;
-            const  [rows] = await pool.execute(query, [`%${termo}%`]);
+            const query = `SELECT * FROM despesas WHERE responsavel_nome LIKE ?`;
+            const  [rows] = await pool.execute(query, [`%${despesa}%`]);
             return rows;
         }
     }

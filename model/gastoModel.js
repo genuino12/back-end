@@ -71,7 +71,7 @@ class gastoModel {
     toJSON() {
         return {
             id: this.#id,
-            tipo_despesa_id: this.#tipo_despesa_id, 
+            tipo_despesa_id: this.#tipo_despesa_id,
             valor: this.#valor,
             data_vencimento: this.#data_vencimento,
             responsavel_nome: this.#responsavel_nome,
@@ -92,42 +92,57 @@ class gastoModel {
         );
 
         const insertedId = await dao.inserir(gasto);
-        gasto.id = insertedId;  
+        gasto.id = insertedId;
 
-        return gasto.toJSON();  
+        return gasto.toJSON();
     }
 
     // Método estático para buscar por filtro
-    static async BuscarPorFiltro(termo) {
-        const dao = new gastoDAO();
-        const rows = await dao.BuscarPorTermo(termo);
-        return rows.map((row) => new gastoModel(
-            row.id,
-            row.tipo_despesa_id,
-            row.valor,
-            row.data_vencimento,
-            row.responsavel_nome,
-            row.observacao
-        ));
+    static async buscarDespesas(despesa) 
+    {
+        try 
+        {           
+            const dao = new gastoDAO();
+            const rows = await dao.BuscarPorDespesas(despesa);
+
+            // Validação do retorno do DAO
+            if (!Array.isArray(rows)) {
+                throw new Error("O método buscarDespesas não retornou um array.");
+            }
+            // Mapeia as linhas para objetos do modelo
+            return rows.map((row) => new gastoModel(
+                row.id,
+                row.tipo_despesa_id,
+                row.valor,
+                row.data_vencimento,
+                row.responsavel_nome,
+                row.observacao
+            ));
+        } catch (error) {
+            console.error("Erro ao buscar despesas:", error);
+            throw new Error("Não foi possível buscar as despesas.");
+        }
     }
+
+
 
     // Método de instância para deletar
     async Deletar() {
         const dao = new gastoDAO();
-        return await dao.Deletar(this.#id);  
+        return await dao.Deletar(this.#id);
     }
 
     // Método de instância para atualizar
     async Atualizar() {
         const dao = new gastoDAO();
-        return await dao.Atualizar(this.#id, this);  
+        return await dao.Atualizar(this.#id, this);
     }
 
     // Método estático para buscar por ID
     static async BuscaPorID(id) {
         const dao = new gastoDAO();
-        const data = await dao.BuscaPorID(id);  
-        if (!data) return null;  
+        const data = await dao.BuscaPorID(id);
+        if (!data) return null;
         return new gastoModel(
             data.id,
             data.tipo_despesa_id,

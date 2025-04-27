@@ -78,9 +78,8 @@ class gastoController {
     // Método para buscar despesas por filtro
     async BuscarPorFiltro(req, res) {
         try {
-            const { termo } = req.query;
-            const gasto = await gastoModel.BuscarPorFiltro(termo);
-
+            const { despesa } = req.query;                       
+            const gasto = await gastoModel.buscarDespesas(despesa);            
             if (gasto.length === 0) {
                 return res.status(404).json({
                     message: 'Nenhuma despesa encontrada',

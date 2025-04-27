@@ -82,8 +82,9 @@ class tipoDespesaController {
     // Método para buscar tipos de despesa por filtro
     async BuscarPorFiltro(req, res) {
         try {
-            const { termo } = req.query;
+            const termo = req.query.termo || "";
             const tiposDespesa = await tipoDespesaModel.BuscarPorFiltro(termo);
+            console.log(" termo recebido da query:", termo);
 
             if (tiposDespesa.length === 0) {
                 return res.status(404).json({
